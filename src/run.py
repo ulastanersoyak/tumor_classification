@@ -89,7 +89,10 @@ if __name__ == "__main__":
                                                                                        optimizer=optimizer,
                                                                                        device=device,
                                                                                        epochs=epochs)
-
+    #TODO : fix overfitting problem
+    #TODO : a function that takes an image path as an input and makes a prediction about image using model and shows top 5 probabilities as % 
+    #TODO : add an UI
+    # TODO: optimize the code,write docstrings and type notations.(shortly clean everythin up) 
     plt.figure(figsize=(10, 5))
     plt.plot(train_loss, label='Train Loss')
     plt.plot(train_acc, label='Train Accuracy')

@@ -8,7 +8,6 @@ import time
 import torch
 from tqdm import tqdm
 
-
 def train_one_epoch(model:nn.Module,train_dataloader:DataLoader,loss_fn:nn.Module,optimizer:optim.Optimizer,device:str)-> Tuple[float,float]:
     """
     Trains the given `model` for one epoch on the provided `train_dataloader` using the specified `loss_fn`
@@ -86,6 +85,8 @@ def train(model:nn.Module,train_dataloader:DataLoader,loss_fn:nn.Module,optimize
             print(f"|    Epoch {i+1}/{epochs} | Train Loss: {train_loss:.4f} | Train Acc: %{train_acc:.4f} | Train time: {total:.2f}second(s)                                          |")
         print("|                                                                                                                                |")
         print("----------------------------------------------------------------------------------------------------------------------------------")
+        if(i%10==0):
+            torch.save(model.state_dict(), "tumor_classifier.pth")
     torch.save(model.state_dict(), "tumor_classifier.pth")
     train_end = time.time()
     print(f"TRAINING FINISHED | Took {train_end-train_start}second(s)")
@@ -216,6 +217,9 @@ def test_and_train(model:nn.Module,train_dataloader:DataLoader,test_dataloader:D
             print(f"|    Epoch {i+1}/{epochs} | Test Loss: {test_loss:.4f} | Test Acc: %{test_acc:.4f} | Test time: {total:.2f}second(s)                                             |")
         print("|                                                                                                                                |")
         print("----------------------------------------------------------------------------------------------------------------------------------")
+        if(i%10==0):
+            torch.save(model.state_dict(), "tumor_classifier.pth")
+
 
     torch.save(model.state_dict(), "tumor_classifier.pth")
     test_train_end = time.time()
