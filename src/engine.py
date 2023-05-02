@@ -6,12 +6,10 @@ from utils import calculate_accuracy
 from torch.optim.lr_scheduler import StepLR
 import time
 import torch
+from tqdm import tqdm
 
-<<<<<<< HEAD
+
 def train_one_epoch(model:nn.Module,train_dataloader:DataLoader,loss_fn:nn.Module,optimizer:optim.Optimizer,device:str)-> Tuple[float,float]:
-=======
-def train_one_epoch(model:nn.Module,train_dataloader:DataLoader,loss_fn:nn.Module,optimizer:optim.Optimizer,device:str):
->>>>>>> origin/master
     """
     Trains the given `model` for one epoch on the provided `train_dataloader` using the specified `loss_fn`
     and `optimizer`. Calculates the training accuracy and loss for the entire training dataset.
@@ -67,7 +65,7 @@ def train(model:nn.Module,train_dataloader:DataLoader,loss_fn:nn.Module,optimize
     scheduler = StepLR(optimizer, step_size=10, gamma=0.5)
     train_start = time.time()
     print("TRAINING STARTED")
-    for i in range(epochs):
+    for i in tqdm(range(epochs), desc="Epochs"):
         start = time.time()
         train_loss,train_acc = train_one_epoch(model=model,
                                                train_dataloader=train_dataloader,
@@ -82,14 +80,10 @@ def train(model:nn.Module,train_dataloader:DataLoader,loss_fn:nn.Module,optimize
         total_time.append(total)
         print("----------------------------------------------------------------------------------------------------------------------------------")
         print("|                                                                                                                                |")
-<<<<<<< HEAD
         if(i>9):
             print(f"|    Epoch {i+1}/{epochs} | Train Loss: {train_loss:.4f} | Train Acc: %{train_acc:.4f} | Train time: {total:.2f}second(s)                                         |")
         else:
             print(f"|    Epoch {i+1}/{epochs} | Train Loss: {train_loss:.4f} | Train Acc: %{train_acc:.4f} | Train time: {total:.2f}second(s)                                          |")
-=======
-        print(f"|    Epoch {i+1}/{epochs} | Train Loss: {train_loss:.4f} | Train Acc: %{train_acc:.4f} | Time cost: {total:.2f}second(s)                                           |")
->>>>>>> origin/master
         print("|                                                                                                                                |")
         print("----------------------------------------------------------------------------------------------------------------------------------")
     torch.save(model.state_dict(), "tumor_classifier.pth")
@@ -97,7 +91,6 @@ def train(model:nn.Module,train_dataloader:DataLoader,loss_fn:nn.Module,optimize
     print(f"TRAINING FINISHED | Took {train_end-train_start}second(s)")
     return total_train_loss, total_train_accuracy,total_time
 
-<<<<<<< HEAD
 def test_one_epoch(model:nn.Module,test_dataloader:DataLoader,loss_fn:nn.Module,device:str)-> Tuple[float,float]:
     model.to(device)
     model.eval()
@@ -122,7 +115,7 @@ def test(model:nn.Module,test_dataloader:DataLoader,loss_fn:nn.Module,device:str
     total_time=[]
     test_start = time.time()
     print("TESTING STARTED")
-    for i in range(epochs):
+    for i in tqdm(range(epochs), desc="Epochs"):
         start = time.time()
         test_loss,test_acc = test_one_epoch(model=model,
                                                test_dataloader=test_dataloader,
@@ -182,7 +175,7 @@ def test_and_train(model:nn.Module,train_dataloader:DataLoader,test_dataloader:D
     total_test_accuracy=[]
     test_time=[]
 
-    for i in range(epochs):
+    for i in tqdm(range(epochs), desc="Epochs"):
 
         ### TRAINING PART ###
         start = time.time()
@@ -228,10 +221,3 @@ def test_and_train(model:nn.Module,train_dataloader:DataLoader,test_dataloader:D
     test_train_end = time.time()
     print(f"TRAINING ANG TESTING FINISHED | Took {test_train_end-test_train_start}second(s)")
     return total_train_loss, total_train_accuracy, train_time, total_test_loss, total_test_accuracy, test_time
-=======
-def test_one_epoch():
-    pass
-
-def test():
-    pass
->>>>>>> origin/master

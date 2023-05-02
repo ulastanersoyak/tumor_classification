@@ -1,24 +1,14 @@
-<<<<<<< HEAD
 import torch
 from data_setup import tumor_dataset,create_dataloaders
 from model import tumor_classifier
 from engine import train,test,test_and_train
-=======
-from data_setup import tumor_dataset,create_dataloaders
-from model import tumor_classifier
-from engine import train
->>>>>>> origin/master
 import argparse
 from torch import nn,optim
 import matplotlib.pyplot as plt
 from utils import set_device
-<<<<<<< HEAD
 import os
 
 PATH = "tumor_classifier.pth"
-=======
-
->>>>>>> origin/master
 IMAGE_SIZE = (256,256)
 BATCH_SIZE = 32
 NUM_WORKERS = 4
@@ -64,7 +54,6 @@ if __name__ == "__main__":
                                                           batch_size=batch_size,
                                                           num_workers=num_workers,
                                                           shuffle=True)
-<<<<<<< HEAD
     
     model = torch.nn.Module
     if os.path.isfile(PATH):
@@ -76,15 +65,10 @@ if __name__ == "__main__":
         model = tumor_classifier()
 
     
-=======
-
-    model = tumor_classifier()
->>>>>>> origin/master
     loss_fn = nn.CrossEntropyLoss()
     optimizer = optim.Adam(params=model.parameters(),lr=learning_rate)
     device = set_device()
 
-<<<<<<< HEAD
     # train_loss,train_acc,train_time= train(model=model,
     #                                        train_dataloader=train_dataloader,
     #                                        loss_fn=loss_fn,
@@ -113,19 +97,6 @@ if __name__ == "__main__":
     plt.plot(test_loss, label='Test Loss')
     plt.plot(test_acc, label='Test Accuracy')
     plt.plot(test_time, label='Test Time')
-=======
-    loss,acc,time= train(model=model,
-                    train_dataloader=train_dataloader,
-                    loss_fn=loss_fn,
-                    optimizer=optimizer,
-                    epochs=epochs,
-                    device=device)
-    
-    plt.figure(figsize=(10, 5))
-    plt.plot(loss, label='Train Loss')
-    plt.plot(acc, label='Train Accuracy')
-    plt.plot(time, label='Total Time')
->>>>>>> origin/master
     plt.xlabel('Epoch')
     plt.ylabel('Value')
     plt.legend()
