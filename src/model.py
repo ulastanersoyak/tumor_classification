@@ -19,22 +19,27 @@ class tumor_classifier(nn.Module):
         self.layers = nn.Sequential(
             nn.Conv2d(in_channels=3, out_channels=16, kernel_size=3, stride=1, padding=1),
             nn.ReLU(),
-            nn.MaxPool2d(kernel_size=2, stride=2),
+            nn.MaxPool2d(kernel_size=3, stride=2),
+
             nn.Conv2d(in_channels=16, out_channels=32, kernel_size=3, stride=1, padding=1),
             nn.ReLU(),
-            nn.MaxPool2d(kernel_size=2, stride=2),
+            nn.MaxPool2d(kernel_size=3, stride=2),
+
             nn.Conv2d(in_channels=32, out_channels=64, kernel_size=3, stride=1, padding=1),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2, stride=2),
+
             nn.Flatten(),
-            nn.Dropout(p=0.5),
-            nn.Linear(in_features=256*256, out_features=512),
+
+            nn.Dropout(p=0.3),
+            nn.Linear(in_features=248*248, out_features=64),
             nn.ReLU(),
-            nn.Dropout(p=0.5),
-            nn.Linear(in_features=512, out_features=4),
+
+            nn.Dropout(p=0.3),
+            nn.Linear(in_features=64, out_features=4),
             nn.Softmax(dim=1)
         )
-
+        
     def forward(self,x):
         """
         Forward pass through the network

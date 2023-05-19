@@ -1,4 +1,5 @@
 import torch
+import matplotlib.pyplot as plt
 
 def set_device()-> str:
     """

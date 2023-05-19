@@ -2,6 +2,7 @@ from typing import List, Tuple
 from torch import nn
 from torch.utils.data import DataLoader
 import torch.optim as optim
+from model import tumor_classifier
 from utils import calculate_accuracy
 from torch.optim.lr_scheduler import StepLR
 import time
@@ -111,6 +112,20 @@ def test_one_epoch(model:nn.Module,test_dataloader:DataLoader,loss_fn:nn.Module,
         return test_loss,test_acc
 
 def test(model:nn.Module,test_dataloader:DataLoader,loss_fn:nn.Module,device:str,epochs:int)-> Tuple[List[float], List[float]]:
+    """
+    Performs testing on a trained model using the provided test dataloader.
+
+    Args:
+        model (nn.Module): The trained model to be tested.
+        test_dataloader (DataLoader): The dataloader containing the test dataset.
+        loss_fn (nn.Module): The loss function used for calculating the test loss.
+        device (str): The device (e.g., 'cpu' or 'cuda') on which the testing will be performed.
+        epochs (int): The number of epochs to run the testing.
+
+    Returns:
+        Tuple[List[float], List[float], List[float]]: A tuple containing the lists of test losses, test accuracies, and the time taken for each epoch.
+
+    """
     total_test_loss=[]
     total_test_accuracy=[]
     total_time=[]
@@ -175,9 +190,9 @@ def test_and_train(model:nn.Module,train_dataloader:DataLoader,test_dataloader:D
     total_test_loss=[]
     total_test_accuracy=[]
     test_time=[]
+    min_loss = 99999
 
     for i in tqdm(range(epochs), desc="Epochs"):
-
         ### TRAINING PART ###
         start = time.time()
         train_loss,train_acc = train_one_epoch(model=model,
@@ -191,7 +206,7 @@ def test_and_train(model:nn.Module,train_dataloader:DataLoader,test_dataloader:D
         end = time.time()
         total= end-start
         train_time.append(total)
-        print("----------------------------------------------------------------------------------------------------------------------------------")
+        print("\n----------------------------------------------------------------------------------------------------------------------------------")
         print("|                                                                                                                                |")
         if(i>8):
             print(f"|    Epoch {i+1}/{epochs} | Train Loss: {train_loss:.4f} | Train Acc: %{train_acc:.4f} | Train time: {total:.2f}second(s)                                         |")
@@ -217,11 +232,20 @@ def test_and_train(model:nn.Module,train_dataloader:DataLoader,test_dataloader:D
             print(f"|    Epoch {i+1}/{epochs} | Test Loss: {test_loss:.4f} | Test Acc: %{test_acc:.4f} | Test time: {total:.2f}second(s)                                             |")
         print("|                                                                                                                                |")
         print("----------------------------------------------------------------------------------------------------------------------------------")
-        if(i%10==0):
+        if(test_loss<min_loss):
             torch.save(model.state_dict(), "tumor_classifier.pth")
+            print(f"Saved a new best model! Previous loss was: {min_loss} new loss is: {test_loss}")
+            min_loss=test_loss
 
-
-    torch.save(model.state_dict(), "tumor_classifier.pth")
     test_train_end = time.time()
     print(f"TRAINING ANG TESTING FINISHED | Took {test_train_end-test_train_start}second(s)")
     return total_train_loss, total_train_accuracy, train_time, total_test_loss, total_test_accuracy, test_time
+
+def evaluate(model_path,target):
+        img = target[0]
+        label = target[0]
+        
+        model = tumor_classifier()
+        model.load_state_dict(torch.load(model_path))
+        prediction = model(img)
+        return f"predicted {prediction} /|\ target: {label}"
