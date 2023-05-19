@@ -20,7 +20,22 @@ cd tumor_classification
 
 # Usage
 
-```python run.py```
+```python run.py --image_size <default 256>  --batch_size <default 32>  --num_workers <default 4> --learning_rate <default 0.0001> --epochs <default 20> --transforms <default 1>```
+
+--image_size: The desired size (in pixels) of the input images for the model. The default value is 256.
+
+--batch_size: The number of images to include in each batch during training. The default value is 32.
+
+--num_workers: The number of subprocesses to use for data loading. The default value is 4.
+
+--learning_rate: The learning rate for the model's optimizer. The default value is 0.0001.
+
+--epochs: The number of training epochs. The default value is 20.
+
+--transforms: Determines whether to apply data augmentation transforms during training. Set it to 1 to enable transforms or 0 to skip them. The default value is 1.
+
+
+
 
 
 
