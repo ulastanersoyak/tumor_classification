@@ -18,7 +18,7 @@ cd tumor_classification
     Place the dataset files in the appropriate directory.
 
 
-#Usage
+# Usage
 
 ```python run.py```
 
