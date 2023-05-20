@@ -58,9 +58,3 @@ Push to the branch
 Open a pull request
 
 
-# Current results
-
-
-Avarege time to train one epoch on <NVIDIA GeForce GTX 1650> : 64.6149539232 sec/epoch
-
-![Current Graphs](https://github.com/UlasTanErsoyak/tumor_classification/assets/92662728/a8bdf597-d95c-48cf-8188-73a029716927)
