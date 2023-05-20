@@ -17,26 +17,41 @@ class tumor_classifier(nn.Module):
     def __init__(self) -> None:
         super().__init__()
         self.layers = nn.Sequential(
-            nn.Conv2d(in_channels=3, out_channels=16, kernel_size=3, stride=1, padding=1),
-            nn.ReLU(),
-            nn.MaxPool2d(kernel_size=3, stride=2),
 
-            nn.Conv2d(in_channels=16, out_channels=32, kernel_size=3, stride=1, padding=1),
+            #1
+            nn.Conv2d(in_channels=3, out_channels=10, kernel_size=3, stride=1, padding=1),
+            nn.BatchNorm2d(10),
             nn.ReLU(),
-            nn.MaxPool2d(kernel_size=3, stride=2),
 
-            nn.Conv2d(in_channels=32, out_channels=64, kernel_size=3, stride=1, padding=1),
+            #2
+            nn.Conv2d(in_channels=10, out_channels=20, kernel_size=3, stride=1, padding=1),
+            nn.BatchNorm2d(20),
+            nn.ReLU(),
+            nn.MaxPool2d(kernel_size=2, stride=2),
+
+            #3
+            nn.Conv2d(in_channels=20, out_channels=40, kernel_size=3, stride=1, padding=1),
+            nn.BatchNorm2d(40),
+            nn.ReLU(),
+
+            #4
+            nn.Conv2d(in_channels=40, out_channels=80, kernel_size=3, stride=1, padding=1),
+            nn.BatchNorm2d(80),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2, stride=2),
 
             nn.Flatten(),
 
-            nn.Dropout(p=0.3),
-            nn.Linear(in_features=248*248, out_features=64),
+            nn.Dropout(p=0.5),
+            nn.Linear(in_features=327680, out_features=50),
             nn.ReLU(),
 
-            nn.Dropout(p=0.3),
-            nn.Linear(in_features=64, out_features=4),
+            nn.Dropout(p=0.5),
+            nn.Linear(in_features=50, out_features=200),
+            nn.ReLU(),
+
+            nn.Dropout(p=0.5),
+            nn.Linear(in_features=200, out_features=4),
             nn.Softmax(dim=1)
         )
         

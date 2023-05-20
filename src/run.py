@@ -35,6 +35,7 @@ parser.add_argument('--epochs', type=int, default=EPOCHS,
 
 parser.add_argument('--transforms', type=int, default=EPOCHS,
                     help='number of iteration over dataset')
+
 args = parser.parse_args()
 
 if __name__ == "__main__":
@@ -59,7 +60,7 @@ if __name__ == "__main__":
         train_dataset= tumor_dataset(root_dir=train_path,image_size=(image_size,image_size),transform=transform)
 
     else:
-        train_dataset= tumor_dataset(root_dir=train_path,image_size=(image_size,image_size),)
+        train_dataset= tumor_dataset(root_dir=train_path,image_size=(image_size,image_size))
     
     test_dataset = tumor_dataset(root_dir=test_path,image_size=(image_size,image_size),)
 
@@ -88,7 +89,7 @@ if __name__ == "__main__":
 
     
     loss_fn = nn.CrossEntropyLoss()
-    optimizer = optim.Adam(params=model.parameters(),lr=learning_rate,weight_decay=0.01)
+    optimizer = optim.SGD(params=model.parameters(),lr=learning_rate,weight_decay=0.005,momentum=0.9)
     device = set_device()
 
     # train_loss,train_acc,train_time= train(model=model,
