@@ -19,39 +19,48 @@ class tumor_classifier(nn.Module):
         self.layers = nn.Sequential(
 
             #1
-            nn.Conv2d(in_channels=3, out_channels=10, kernel_size=3, stride=1, padding=1),
+            nn.Conv2d(in_channels=3, out_channels=64, kernel_size=3, stride=1, padding=1),
             nn.BatchNorm2d(10),
             nn.ReLU(),
 
             #2
-            nn.Conv2d(in_channels=10, out_channels=20, kernel_size=3, stride=1, padding=1),
-            nn.BatchNorm2d(20),
+            nn.Conv2d(in_channels=64, out_channels=128, kernel_size=3, stride=1, padding=1),
+            nn.BatchNorm2d(128),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2, stride=2),
 
             #3
-            nn.Conv2d(in_channels=20, out_channels=40, kernel_size=3, stride=1, padding=1),
-            nn.BatchNorm2d(40),
+            nn.Conv2d(in_channels=128, out_channels=128, kernel_size=3, stride=1, padding=1),
+            nn.BatchNorm2d(128),
             nn.ReLU(),
 
             #4
-            nn.Conv2d(in_channels=40, out_channels=80, kernel_size=3, stride=1, padding=1),
-            nn.BatchNorm2d(80),
+            nn.Conv2d(in_channels=128, out_channels=256, kernel_size=3, stride=1, padding=1),
+            nn.BatchNorm2d(256),
+            nn.ReLU(),
+            nn.MaxPool2d(kernel_size=2, stride=2),
+
+            nn.Conv2d(in_channels=256, out_channels=256, kernel_size=3, stride=1, padding=1),
+            nn.BatchNorm2d(256),
+            nn.ReLU(),
+
+            nn.Conv2d(in_channels=512, out_channels=512, kernel_size=3, stride=1, padding=1),
+            nn.BatchNorm2d(512),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2, stride=2),
 
             nn.Flatten(),
 
             nn.Dropout(p=0.5),
-            nn.Linear(in_features=327680, out_features=50),
+            nn.Linear(in_features=327680, out_features=1024),
             nn.ReLU(),
 
             nn.Dropout(p=0.5),
-            nn.Linear(in_features=50, out_features=200),
+            nn.Linear(in_features=1024, out_features=512),
             nn.ReLU(),
 
             nn.Dropout(p=0.5),
-            nn.Linear(in_features=200, out_features=4),
+            nn.Linear(in_features=512, out_features=4),
             nn.Softmax(dim=1)
         )
         
