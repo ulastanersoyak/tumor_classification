@@ -1,6 +1,14 @@
 # Tumor Classifier
 
-CNN model that can classify given brain MRI images  to 4 classes(glioma tumor, meningioma tumor, no tumor, pituitary tumior)
+CNN model that can classify given brain MRI images  to 4 classes(glioma tumor, meningioma tumor, no tumor, pituitary tumor)
+
+After 50 epochs it can predict given images with %71 accuracy.
+
+![Figure_1](https://github.com/UlasTanErsoyak/tumor_classification/assets/92662728/ed91fc31-0dca-4382-9649-cb278082c714)
+![Figure_2](https://github.com/UlasTanErsoyak/tumor_classification/assets/92662728/3a62abac-7b76-43d6-88fb-945b6f100e74)
+
+
+Whole process took 2713.3027703762054second(s) on NVIDIA GTX1650.
 
 # Installation
 
