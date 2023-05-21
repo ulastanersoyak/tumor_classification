@@ -10,11 +10,11 @@ import os
 import torchvision.transforms as transforms
 
 PATH = "tumor_classifier.pth"
-IMAGE_SIZE = 256
-BATCH_SIZE = 32
+IMAGE_SIZE = 128
+BATCH_SIZE = 16
 NUM_WORKERS = 4
-LEARNING_RATE = 0.0001
-EPOCHS=20
+LEARNING_RATE = 0.0005
+EPOCHS=50
 TRANSFORMS = 1
 parser = argparse.ArgumentParser(description='hyperparameters')
 

@@ -69,6 +69,7 @@ class tumor_dataset(Dataset):
         img = Image.open(path).resize(self.image_size)
         if self.transform is not None:
             img = self.transform(img)
+        # img = img.to(torch.float16)
         label= self.headers.index(header)
         return img,label
     
