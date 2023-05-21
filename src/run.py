@@ -16,6 +16,7 @@ NUM_WORKERS = 4
 LEARNING_RATE = 0.0005
 EPOCHS=50
 TRANSFORMS = 1
+MODE = 1
 parser = argparse.ArgumentParser(description='hyperparameters')
 
 parser.add_argument('--batch_size', type=int, default=BATCH_SIZE,
@@ -36,6 +37,8 @@ parser.add_argument('--epochs', type=int, default=EPOCHS,
 parser.add_argument('--transforms', type=int, default=EPOCHS,
                     help='number of iteration over dataset')
 
+parser.add_argument('--mode', type=int, default=MODE,
+                    help='train or eval')
 args = parser.parse_args()
 
 if __name__ == "__main__":
@@ -45,6 +48,8 @@ if __name__ == "__main__":
     learning_rate = args.learning_rate
     epochs = args.epochs
     transform_int = args.transforms
+    mode = args.mode
+
 
     train_path= "data\Training"
     test_path= "data\Testing"
@@ -75,55 +80,54 @@ if __name__ == "__main__":
 
 
 
-    # evaluate("tumor_classifier.pth",test_dataset[0])
-
-    model = torch.nn.Module
-    if os.path.isfile(PATH):
-        print('found trained model.')
-        model = tumor_classifier()
-        model.load_state_dict(torch.load(PATH))
-    else:
-        model = tumor_classifier()
-        print('created model')
-
-
-    
-    loss_fn = nn.CrossEntropyLoss()
-    optimizer = optim.SGD(params=model.parameters(),lr=learning_rate,weight_decay=0.005,momentum=0.9)
-    device = set_device()
-
-    # train_loss,train_acc,train_time= train(model=model,
-    #                                        train_dataloader=train_dataloader,
-    #                                        loss_fn=loss_fn,
-    #                                        optimizer=optimizer,
-    #                                        epochs=epochs,
-    #                                        device=device)
-    
-    # test_loss,test_acc,test_time = test(model=model,
-    #                                     test_dataloader=test_dataloader,
-    #                                     loss_fn=loss_fn,
-    #                                     device=device,
-    #                                     epochs=epochs)
-    
-    train_loss, train_acc, train_time, test_loss, test_acc, test_time = test_and_train(model=model,
-                                                                                       train_dataloader=train_dataloader,
-                                                                                       test_dataloader=test_dataloader,
-                                                                                       loss_fn=loss_fn,
-                                                                                       optimizer=optimizer,
-                                                                                       device=device,
-                                                                                       epochs=epochs)
-
-    plt.figure(figsize=(10, 5))
-    plt.plot(train_loss, label='Train Loss')
-    plt.plot(train_acc, label='Train Accuracy')
-    plt.plot(train_time, label='Train Time')
-    plt.plot(test_loss, label='Test Loss')
-    plt.plot(test_acc, label='Test Accuracy')
-    plt.plot(test_time, label='Test Time')
-    plt.xlabel('Epoch')
-    plt.ylabel('Value')
-    plt.legend()
-    plt.show()
+    if mode == 0:
+        model = torch.nn.Module
+        if os.path.isfile(PATH):
+            print('found trained model.')
+            model = tumor_classifier()
+            model.load_state_dict(torch.load(PATH))
+        else:
+            model = tumor_classifier()
+            print('created model')
 
 
-    
+        
+        loss_fn = nn.CrossEntropyLoss()
+        optimizer = optim.SGD(params=model.parameters(),lr=learning_rate,weight_decay=0.005,momentum=0.9)
+        device = set_device()
+
+        # train_loss,train_acc,train_time= train(model=model,
+        #                                        train_dataloader=train_dataloader,
+        #                                        loss_fn=loss_fn,
+        #                                        optimizer=optimizer,
+        #                                        epochs=epochs,
+        #                                        device=device)
+        
+        # test_loss,test_acc,test_time = test(model=model,
+        #                                     test_dataloader=test_dataloader,
+        #                                     loss_fn=loss_fn,
+        #                                     device=device,
+        #                                     epochs=epochs)
+        
+        train_loss, train_acc, train_time, test_loss, test_acc, test_time = test_and_train(model=model,
+                                                                                        train_dataloader=train_dataloader,
+                                                                                        test_dataloader=test_dataloader,
+                                                                                        loss_fn=loss_fn,
+                                                                                        optimizer=optimizer,
+                                                                                        device=device,
+                                                                                        epochs=epochs)
+
+        plt.figure(figsize=(10, 5))
+        plt.plot(train_loss, label='Train Loss')
+        plt.plot(train_acc, label='Train Accuracy')
+        plt.plot(train_time, label='Train Time')
+        plt.plot(test_loss, label='Test Loss')
+        plt.plot(test_acc, label='Test Accuracy')
+        plt.plot(test_time, label='Test Time')
+        plt.xlabel('Epoch')
+        plt.ylabel('Value')
+        plt.legend()
+        plt.show()
+
+    if mode == 1:
+        evaluate(PATH,test_dataset)

@@ -8,6 +8,7 @@ from torch.optim.lr_scheduler import StepLR
 import time
 import torch
 from tqdm import tqdm
+import matplotlib.pyplot as plt
 
 def train_one_epoch(model:nn.Module,train_dataloader:DataLoader,loss_fn:nn.Module,optimizer:optim.Optimizer,device:str)-> Tuple[float,float]:
     """
@@ -241,11 +242,31 @@ def test_and_train(model:nn.Module,train_dataloader:DataLoader,test_dataloader:D
     print(f"TRAINING ANG TESTING FINISHED | Took {test_train_end-test_train_start}second(s)")
     return total_train_loss, total_train_accuracy, train_time, total_test_loss, total_test_accuracy, test_time
 
-def evaluate(model_path,target):
-        img = target[0]
-        label = target[0]
-        
-        model = tumor_classifier()
-        model.load_state_dict(torch.load(model_path))
-        prediction = model(img)
-        return f"predicted {prediction} /|\ target: {label}"
+def evaluate(model_path, dataset):
+    model = tumor_classifier()
+    model.load_state_dict(torch.load(model_path))
+    model.eval()  # Set the model to evaluation mode
+
+    figure = plt.figure(figsize=(8, 8))
+    cols, rows = 4, 4
+
+    for i in range(1, cols * rows + 1):
+        sample_idx = torch.randint(len(dataset), size=(1,)).item()
+        img, label = dataset[sample_idx]
+        img = img.unsqueeze(0)  # Add batch dimension
+        with torch.no_grad():
+            prediction = model(img)
+        predicted_label = torch.argmax(prediction).item()
+
+        figure.add_subplot(rows, cols, i)
+
+        if predicted_label == label:
+            plt.title(f"Predicted: {dataset.headers[predicted_label]}\nTarget: {dataset.headers[label]}", color='green')
+        else:
+            plt.title(f"Predicted: {dataset.headers[predicted_label]}\nTarget: {dataset.headers[label]}", color='red')
+
+        plt.axis("off")
+        plt.imshow(img.squeeze().permute(1, 2, 0))  # Transpose dimensions for image display
+
+    plt.tight_layout()
+    plt.show()
