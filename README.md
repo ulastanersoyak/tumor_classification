@@ -9,7 +9,10 @@ After 50 epochs it can predict given images with %71 accuracy.
 ![preds](https://github.com/UlasTanErsoyak/tumor_classification/assets/92662728/d1471176-c7b5-4964-9ad7-dedd62ade40b)
 
 
-Whole process took 2713.3027703762054second(s) on NVIDIA GTX1650.
+
+After tinkering with model architecture and hyperparameters, new test accuracy is around %82.
+![leakyrelu](https://github.com/UlasTanErsoyak/tumor_classification/assets/92662728/ec970c78-961b-4ff6-9ff1-930c050f6de2)
+
 
 # Installation
 
