@@ -181,19 +181,15 @@ def test_and_train(model:nn.Module,train_dataloader:DataLoader,test_dataloader:D
         - total_test_accuracy (List[float]): The test accuracy for each epoch.
         - test_time (List[float]): The time taken for each epoch of testing.
     """
-    test_train_start = time.time()
     print("TRAINIG AND TESTING STARTED")
     total_train_loss=[]
     total_train_accuracy=[]
-    train_time=[]
-    scheduler = StepLR(optimizer, step_size=10, gamma=0.6)
     
     total_test_loss=[]
     total_test_accuracy=[]
-    test_time=[]
     min_loss = 99999
 
-    for i in tqdm(range(epochs), desc="Epochs"):
+    for i in range(epochs):
         ### TRAINING PART ###
         start = time.time()
         train_loss,train_acc = train_one_epoch(model=model,
@@ -203,17 +199,10 @@ def test_and_train(model:nn.Module,train_dataloader:DataLoader,test_dataloader:D
                                                device=device)
         total_train_loss.append(train_loss)
         total_train_accuracy.append(train_acc)
-        scheduler.step()
+        optimizer.step()
         end = time.time()
         total= end-start
-        train_time.append(total)
-        print("\n----------------------------------------------------------------------------------------------------------------------------------")
-        print("|                                                                                                                                |")
-        if(i>8):
-            print(f"|    Epoch {i+1}/{epochs} | Train Loss: {train_loss:.4f} | Train Acc: %{train_acc:.4f} | Train time: {total:.2f}second(s)                                         |")
-        else:
-            print(f"|    Epoch {i+1}/{epochs} | Train Loss: {train_loss:.4f} | Train Acc: %{train_acc:.4f} | Train time: {total:.2f}second(s)                                          |")
-        print("|                                                                                                                                |")
+        print(f"epoch {i+1}/{epochs} | train loss: {train_loss:.4f} | train acc: %{train_acc:.4f} | elapsed time: {total:.2f}second(s)")
 
         ### TESTING PART ###
         start = time.time()
@@ -225,22 +214,16 @@ def test_and_train(model:nn.Module,train_dataloader:DataLoader,test_dataloader:D
         total_test_accuracy.append(test_acc)
         end = time.time()
         total= end-start
-        test_time.append(total)
-        print("|                                                                                                                                |")
-        if(i>8):
-            print(f"|    Epoch {i+1}/{epochs} | Test Loss: {test_loss:.4f} | Test Acc: %{test_acc:.4f} | Test time: {total:.2f}second(s)                                            |")
-        else:
-            print(f"|    Epoch {i+1}/{epochs} | Test Loss: {test_loss:.4f} | Test Acc: %{test_acc:.4f} | Test time: {total:.2f}second(s)                                             |")
-        print("|                                                                                                                                |")
-        print("----------------------------------------------------------------------------------------------------------------------------------")
+        print(f"epoch {i+1}/{epochs} | test loss: {test_loss:.4f} | test ac: %{test_acc:.4f} | elapsed time: {total:.2f}second(s)")
+        print(' ')
         if(test_loss<min_loss):
             torch.save(model.state_dict(), "tumor_classifier.pth")
-            print(f"Saved a new best model! Previous loss was: {min_loss} new loss is: {test_loss}")
+            print(f"new best model! previous loss was: {min_loss} new loss is: {test_loss}")
+            print(' ')
             min_loss=test_loss
 
-    test_train_end = time.time()
-    print(f"TRAINING ANG TESTING FINISHED | Took {test_train_end-test_train_start}second(s)")
-    return total_train_loss, total_train_accuracy, train_time, total_test_loss, total_test_accuracy, test_time
+    print(f"TRAINING ANG TESTING FINISHED")
+    return total_train_loss, total_train_accuracy, total_test_loss, total_test_accuracy
 
 def evaluate(model_path, dataset):
     model = tumor_classifier()

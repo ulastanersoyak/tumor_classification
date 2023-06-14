@@ -6,11 +6,14 @@ import matplotlib.pyplot as plt
 from typing import Callable, Optional, Tuple
 import numpy as np
 from torchvision import transforms
+from torchvision.transforms import functional as F
 class tumor_dataset(Dataset):
     """
     A dataset class for tumor images.
     """
-    def __init__(self,root_dir:str,image_size:Tuple[int,int],transform: Optional[Callable] = transforms.Compose([transforms.ToTensor()])) -> None:
+    def __init__(self,root_dir:str,
+                 image_size:Tuple[int,int],
+                 transform: Optional[Callable]) -> None:
         """
         Initializes a dataset from the given root directory containing images.
 
@@ -23,7 +26,7 @@ class tumor_dataset(Dataset):
 
         Returns:
         None
-    """
+        """
         if(os.path.exists(root_dir)):
             self.headers = []
             self.cases = []
