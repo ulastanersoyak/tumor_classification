@@ -9,8 +9,9 @@ import time
 import torch
 from tqdm import tqdm
 import matplotlib.pyplot as plt
+from torch.cuda.amp import autocast, GradScaler
 
-def train_one_epoch(model:nn.Module,train_dataloader:DataLoader,loss_fn:nn.Module,optimizer:optim.Optimizer,device:str)-> Tuple[float,float]:
+def train_one_epoch(model:nn.Module,train_dataloader:DataLoader,loss_fn:nn.Module,optimizer:optim.Optimizer,device:str,scaler: GradScaler)-> Tuple[float,float]:
     """
     Trains the given `model` for one epoch on the provided `train_dataloader` using the specified `loss_fn`
     and `optimizer`. Calculates the training accuracy and loss for the entire training dataset.
@@ -32,10 +33,13 @@ def train_one_epoch(model:nn.Module,train_dataloader:DataLoader,loss_fn:nn.Modul
     for imgs,labels in train_dataloader:
         imgs,labels = imgs.to(device),labels.to(device)
         optimizer.zero_grad()
-        outputs = model(imgs)
-        loss = loss_fn(outputs, labels)
-        loss.backward()
-        optimizer.step()
+        with autocast():
+            outputs = model(imgs)
+            loss = loss_fn(outputs, labels)
+        scaler.scale(loss).backward()
+        scaler.step(optimizer)
+        scaler.update()
+
         train_loss += loss.item() * len(labels)
         train_acc += (outputs.argmax(dim=1) == labels).sum().item()
 
@@ -99,7 +103,7 @@ def test_one_epoch(model:nn.Module,test_dataloader:DataLoader,loss_fn:nn.Module,
     model.eval()
     test_loss = 0
     test_acc = 0
-    with torch.no_grad():
+    with torch.no_grad(), autocast():
         for imgs,labels in test_dataloader:
             imgs,labels = imgs.to(device),labels.to(device)
             outputs = model(imgs)
@@ -188,7 +192,8 @@ def test_and_train(model:nn.Module,train_dataloader:DataLoader,test_dataloader:D
     total_test_loss=[]
     total_test_accuracy=[]
     min_loss = 99999
-
+    scaler = GradScaler()
+    
     for i in range(epochs):
         ### TRAINING PART ###
         start = time.time()
@@ -196,7 +201,8 @@ def test_and_train(model:nn.Module,train_dataloader:DataLoader,test_dataloader:D
                                                train_dataloader=train_dataloader,
                                                loss_fn=loss_fn,
                                                optimizer=optimizer,
-                                               device=device)
+                                               device=device,
+                                               scaler=scaler)
         total_train_loss.append(train_loss)
         total_train_accuracy.append(train_acc)
         optimizer.step()

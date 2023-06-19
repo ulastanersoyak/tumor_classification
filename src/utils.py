@@ -16,6 +16,7 @@ def set_device()-> str:
     if torch.cuda.is_available():
         print(f"device -> {torch.cuda.device(0)}")
         print(f"device name -> {torch.cuda.get_device_name(0)}")
+        print(f"available VRAM: {torch.cuda.get_device_properties(torch.cuda.device(0)).total_memory / (1024**3):.2f} GB")
         return "cuda"
     return "cpu"
 

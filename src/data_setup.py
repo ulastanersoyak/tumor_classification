@@ -128,7 +128,7 @@ def create_dataloaders(train_dataset:Dataset,test_dataset:Dataset,batch_size:int
                                     num_workers=num_workers)
         test_dataloader = DataLoader(dataset=test_dataset,
                                     batch_size=batch_size,
-                                    shuffle=shuffle,
+                                    shuffle=False,
                                     num_workers=num_workers)
         print("created dataloaders")
         return train_dataloader,test_dataloader
