@@ -1,11 +1,11 @@
 import torch
-from data_setup import tumor_dataset,create_dataloaders
+from data_setup import tumor_dataset, create_dataloaders
 from model import tumor_classifier
-from engine import train,test,evaluate,test_and_train
+from engine import train, test, evaluate, test_and_train
 import argparse
-from torch import nn,optim
+from torch import nn, optim
 import matplotlib.pyplot as plt
-from utils import set_device,show_confusion
+from utils import set_device, show_confusion
 import os
 import torchvision.transforms as transforms
 from prettytable import PrettyTable
@@ -55,9 +55,8 @@ if __name__ == "__main__":
     transform_int = args.transforms
     mode = args.mode
 
-     
-    train_path= "data\Training"
-    test_path= "data\Testing"
+    train_path = "data/Training"
+    test_path = "data/Testing"
 
     mean = [0.485, 0.456, 0.406]
     std = [0.229, 0.224, 0.225]
@@ -71,23 +70,22 @@ if __name__ == "__main__":
         transforms.ToTensor(),
         normalize])
 
-
-    train_dataset= tumor_dataset(root_dir=train_path,image_size=(image_size,image_size),transform=train_transform)
-        
-
+    train_dataset = tumor_dataset(root_dir=train_path, image_size=(
+        image_size, image_size), transform=train_transform)
 
     test_transform = transforms.Compose([
         transforms.ToTensor(),
         normalize])
-        
-    test_dataset = tumor_dataset(root_dir=test_path,image_size=(image_size,image_size),transform=test_transform)
 
-    train_dataloader,test_dataloader = create_dataloaders(train_dataset=train_dataset,
-                                                          test_dataset=test_dataset,
-                                                          batch_size=batch_size,
-                                                          num_workers=num_workers,
-                                                          shuffle=True)
-    
+    test_dataset = tumor_dataset(root_dir=test_path, image_size=(
+        image_size, image_size), transform=test_transform)
+
+    train_dataloader, test_dataloader = create_dataloaders(train_dataset=train_dataset,
+                                                           test_dataset=test_dataset,
+                                                           batch_size=batch_size,
+                                                           num_workers=num_workers,
+                                                           shuffle=True)
+
     if mode == 0:
         model = torch.nn.Module
         if os.path.isfile(PATH):
@@ -99,7 +97,8 @@ if __name__ == "__main__":
             print('created model')
 
         loss_fn = nn.CrossEntropyLoss()
-        optimizer = optim.Adam(params=model.parameters(),lr=learning_rate,weight_decay=weight_decay)
+        optimizer = optim.Adam(params=model.parameters(
+        ), lr=learning_rate, weight_decay=weight_decay)
         device = set_device()
         model.to(device)
         summary(model, input_size=(3, image_size, image_size))
@@ -110,14 +109,12 @@ if __name__ == "__main__":
         #                                        optimizer=optimizer,
         #                                        epochs=epochs,
         #                                        device=device)
-        
+
         # test_loss,test_acc,test_time = test(model=model,
         #                                     test_dataloader=test_dataloader,
         #                                     loss_fn=loss_fn,
         #                                     device=device,
         #                                     epochs=epochs)
-
-
 
         table = PrettyTable(['Modules', 'Parameters'])
         total_params = 0
@@ -129,7 +126,6 @@ if __name__ == "__main__":
             total_params += params
         print(table)
         print(f'Total Trainable Params: {total_params}')
-
 
         train_loss, train_acc, test_loss, test_acc = test_and_train(model=model,
                                                                     train_dataloader=train_dataloader,
@@ -160,20 +156,21 @@ if __name__ == "__main__":
 
         plt.show()
     if mode == 1:
-        evaluate(PATH,test_dataset)
+        evaluate(PATH, test_dataset)
 
     if mode == 2:
         model = tumor_classifier()
         model.load_state_dict(torch.load(PATH))
         device = set_device()
-        show_confusion(model,test_dataloader,test_dataset.headers,device)
+        show_confusion(model, test_dataloader, test_dataset.headers, device)
 
     if mode == 3:
         model = tumor_classifier()
         model.load_state_dict(torch.load(PATH))
         model.eval()
-        img,label = test_dataset[1]
-        pred,convnet1map,convnet2map,convnet3map,convnet4map = model(img.unsqueeze(1))
+        img, label = test_dataset[1]
+        pred, convnet1map, convnet2map, convnet3map, convnet4map = model(
+            img.unsqueeze(1))
         convnet1map = convnet1map.detach().squeeze().numpy()
         convnet2map = convnet2map.detach().squeeze().numpy()
         convnet3map = convnet3map.detach().squeeze().numpy()
@@ -210,15 +207,5 @@ if __name__ == "__main__":
         # Show all the figures
         plt.show()
 
-
         plt.tight_layout()
         plt.show()
-
-
-
-
-
-
-
-                
-        
