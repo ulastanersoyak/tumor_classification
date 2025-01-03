@@ -11,7 +11,8 @@ from tqdm import tqdm
 import matplotlib.pyplot as plt
 from torch.cuda.amp import autocast, GradScaler
 
-def train_one_epoch(model:nn.Module,train_dataloader:DataLoader,loss_fn:nn.Module,optimizer:optim.Optimizer,device:str,scaler: GradScaler)-> Tuple[float,float]:
+
+def train_one_epoch(model: nn.Module, train_dataloader: DataLoader, loss_fn: nn.Module, optimizer: optim.Optimizer, device: str, scaler: GradScaler) -> Tuple[float, float]:
     """
     Trains the given `model` for one epoch on the provided `train_dataloader` using the specified `loss_fn`
     and `optimizer`. Calculates the training accuracy and loss for the entire training dataset.
@@ -29,9 +30,9 @@ def train_one_epoch(model:nn.Module,train_dataloader:DataLoader,loss_fn:nn.Modul
     model.to(device)
     model.train()
     train_acc = 0
-    train_loss=0    
-    for imgs,labels in train_dataloader:
-        imgs,labels = imgs.to(device),labels.to(device)
+    train_loss = 0
+    for imgs, labels in train_dataloader:
+        imgs, labels = imgs.to(device), labels.to(device)
         optimizer.zero_grad()
         with autocast():
             outputs = model(imgs)
@@ -46,9 +47,10 @@ def train_one_epoch(model:nn.Module,train_dataloader:DataLoader,loss_fn:nn.Modul
     total_samples = len(train_dataloader.dataset)
     train_loss /= total_samples
     train_acc = calculate_accuracy(train_acc, total_samples)
-    return train_loss,train_acc
+    return train_loss, train_acc
 
-def train(model:nn.Module,train_dataloader:DataLoader,loss_fn:nn.Module,optimizer:optim.Optimizer,device:str,epochs:int) -> Tuple[List[float], List[float]]:
+
+def train(model: nn.Module, train_dataloader: DataLoader, loss_fn: nn.Module, optimizer: optim.Optimizer, device: str, epochs: int) -> Tuple[List[float], List[float]]:
     """
     Trains the given `model` on the provided `train_dataloader` for the specified number of `epochs`, using the
     specified `loss_fn`, `optimizer`, and `learning_rate`. Calculates the training accuracy and loss for each epoch.
@@ -64,48 +66,51 @@ def train(model:nn.Module,train_dataloader:DataLoader,loss_fn:nn.Module,optimize
     Returns:
         A tuple containing three lists: the average training loss for each epoch, the training accuracy for each epoch, and the time each epoch took.
     """
-    total_train_loss=[]
-    total_train_accuracy=[]
-    total_time=[]
+    total_train_loss = []
+    total_train_accuracy = []
+    total_time = []
     scheduler = StepLR(optimizer, step_size=10, gamma=0.5)
     train_start = time.time()
     print("TRAINING STARTED")
     for i in tqdm(range(epochs), desc="Epochs"):
         start = time.time()
-        train_loss,train_acc = train_one_epoch(model=model,
-                                               train_dataloader=train_dataloader,
-                                               loss_fn=loss_fn,
-                                               optimizer=optimizer,
-                                               device=device)
+        train_loss, train_acc = train_one_epoch(model=model,
+                                                train_dataloader=train_dataloader,
+                                                loss_fn=loss_fn,
+                                                optimizer=optimizer,
+                                                device=device)
         total_train_loss.append(train_loss)
         total_train_accuracy.append(train_acc)
         scheduler.step()
         end = time.time()
-        total= end-start
+        total = end-start
         total_time.append(total)
         print("----------------------------------------------------------------------------------------------------------------------------------")
         print("|                                                                                                                                |")
-        if(i>9):
-            print(f"|    Epoch {i+1}/{epochs} | Train Loss: {train_loss:.4f} | Train Acc: %{train_acc:.4f} | Train time: {total:.2f}second(s)                                         |")
+        if (i > 9):
+            print(f"|    Epoch {i+1}/{epochs} | Train Loss: {train_loss:.4f} | Train Acc: %{
+                  train_acc:.4f} | Train time: {total:.2f}second(s)                                         |")
         else:
-            print(f"|    Epoch {i+1}/{epochs} | Train Loss: {train_loss:.4f} | Train Acc: %{train_acc:.4f} | Train time: {total:.2f}second(s)                                          |")
+            print(f"|    Epoch {i+1}/{epochs} | Train Loss: {train_loss:.4f} | Train Acc: %{
+                  train_acc:.4f} | Train time: {total:.2f}second(s)                                          |")
         print("|                                                                                                                                |")
         print("----------------------------------------------------------------------------------------------------------------------------------")
-        if(i%10==0):
+        if (i % 10 == 0):
             torch.save(model.state_dict(), "tumor_classifier.pth")
     torch.save(model.state_dict(), "tumor_classifier.pth")
     train_end = time.time()
     print(f"TRAINING FINISHED | Took {train_end-train_start}second(s)")
-    return total_train_loss, total_train_accuracy,total_time
+    return total_train_loss, total_train_accuracy, total_time
 
-def test_one_epoch(model:nn.Module,test_dataloader:DataLoader,loss_fn:nn.Module,device:str)-> Tuple[float,float]:
+
+def test_one_epoch(model: nn.Module, test_dataloader: DataLoader, loss_fn: nn.Module, device: str) -> Tuple[float, float]:
     model.to(device)
     model.eval()
     test_loss = 0
     test_acc = 0
     with torch.no_grad(), autocast():
-        for imgs,labels in test_dataloader:
-            imgs,labels = imgs.to(device),labels.to(device)
+        for imgs, labels in test_dataloader:
+            imgs, labels = imgs.to(device), labels.to(device)
             outputs = model(imgs)
             loss = loss_fn(outputs, labels)
             test_loss += loss.item() * len(labels)
@@ -114,9 +119,10 @@ def test_one_epoch(model:nn.Module,test_dataloader:DataLoader,loss_fn:nn.Module,
         total_samples = len(test_dataloader.dataset)
         test_loss /= total_samples
         test_acc = calculate_accuracy(test_acc, total_samples)
-        return test_loss,test_acc
+        return test_loss, test_acc
 
-def test(model:nn.Module,test_dataloader:DataLoader,loss_fn:nn.Module,device:str,epochs:int)-> Tuple[List[float], List[float]]:
+
+def test(model: nn.Module, test_dataloader: DataLoader, loss_fn: nn.Module, device: str, epochs: int) -> Tuple[List[float], List[float]]:
     """
     Performs testing on a trained model using the provided test dataloader.
 
@@ -131,38 +137,39 @@ def test(model:nn.Module,test_dataloader:DataLoader,loss_fn:nn.Module,device:str
         Tuple[List[float], List[float], List[float]]: A tuple containing the lists of test losses, test accuracies, and the time taken for each epoch.
 
     """
-    total_test_loss=[]
-    total_test_accuracy=[]
-    total_time=[]
+    total_test_loss = []
+    total_test_accuracy = []
+    total_time = []
     test_start = time.time()
     print("TESTING STARTED")
     for i in tqdm(range(epochs), desc="Epochs"):
         start = time.time()
-        test_loss,test_acc = test_one_epoch(model=model,
-                                               test_dataloader=test_dataloader,
-                                               loss_fn=loss_fn,
-                                               device=device)
+        test_loss, test_acc = test_one_epoch(model=model,
+                                             test_dataloader=test_dataloader,
+                                             loss_fn=loss_fn,
+                                             device=device)
         total_test_loss.append(test_loss)
         total_test_accuracy.append(test_acc)
         end = time.time()
-        total= end-start
+        total = end-start
         total_time.append(total)
         print("----------------------------------------------------------------------------------------------------------------------------------")
         print("|                                                                                                                                |")
-        if(i>9):
-            print(f"|    Epoch {i+1}/{epochs} | Test Loss: {test_loss:.4f} | Test Acc: %{test_acc:.4f} | Test time: {total:.2f}second(s)                                            |")
+        if (i > 9):
+            print(f"|    Epoch {i+1}/{epochs} | Test Loss: {test_loss:.4f} | Test Acc: %{
+                  test_acc:.4f} | Test time: {total:.2f}second(s)                                            |")
         else:
-            print(f"|    Epoch {i+1}/{epochs} | Test Loss: {test_loss:.4f} | Test Acc: %{test_acc:.4f} | Test time: {total:.2f}second(s)                                             |")
+            print(f"|    Epoch {i+1}/{epochs} | Test Loss: {test_loss:.4f} | Test Acc: %{
+                  test_acc:.4f} | Test time: {total:.2f}second(s)                                             |")
         print("|                                                                                                                                |")
         print("----------------------------------------------------------------------------------------------------------------------------------")
     torch.save(model.state_dict(), "tumor_classifier.pth")
     test_end = time.time()
     print(f"TESTING FINISHED | Took {test_end-test_start}second(s)")
-    return total_test_loss, total_test_accuracy,total_time
+    return total_test_loss, total_test_accuracy, total_time
 
 
-
-def test_and_train(model:nn.Module,train_dataloader:DataLoader,test_dataloader:DataLoader,loss_fn:nn.Module,optimizer:optim.Optimizer,device:str,epochs:int) ->Tuple[List[float], List[float], List[float], List[float]]:
+def test_and_train(model: nn.Module, train_dataloader: DataLoader, test_dataloader: DataLoader, loss_fn: nn.Module, optimizer: optim.Optimizer, device: str, epochs: int) -> Tuple[List[float], List[float], List[float], List[float]]:
     """
     Trains and tests a given model for a certain number of epochs, using the specified training and test dataloaders,
     loss function, optimizer, and device.
@@ -186,50 +193,54 @@ def test_and_train(model:nn.Module,train_dataloader:DataLoader,test_dataloader:D
         - test_time (List[float]): The time taken for each epoch of testing.
     """
     print("TRAINIG AND TESTING STARTED")
-    total_train_loss=[]
-    total_train_accuracy=[]
-    
-    total_test_loss=[]
-    total_test_accuracy=[]
+    total_train_loss = []
+    total_train_accuracy = []
+
+    total_test_loss = []
+    total_test_accuracy = []
     min_loss = 99999
     scaler = GradScaler()
-    
+
     for i in range(epochs):
         ### TRAINING PART ###
         start = time.time()
-        train_loss,train_acc = train_one_epoch(model=model,
-                                               train_dataloader=train_dataloader,
-                                               loss_fn=loss_fn,
-                                               optimizer=optimizer,
-                                               device=device,
-                                               scaler=scaler)
+        train_loss, train_acc = train_one_epoch(model=model,
+                                                train_dataloader=train_dataloader,
+                                                loss_fn=loss_fn,
+                                                optimizer=optimizer,
+                                                device=device,
+                                                scaler=scaler)
         total_train_loss.append(train_loss)
         total_train_accuracy.append(train_acc)
         optimizer.step()
         end = time.time()
-        total= end-start
-        print(f"epoch {i+1}/{epochs} | train loss: {train_loss:.4f} | train acc: %{train_acc:.4f} | elapsed time: {total:.2f}second(s)")
+        total = end-start
+        print(f"epoch {i+1}/{epochs} | train loss: {train_loss:.4f} | train acc: %{
+              train_acc:.4f} | elapsed time: {total:.2f}second(s)")
 
         ### TESTING PART ###
         start = time.time()
-        test_loss,test_acc = test_one_epoch(model=model,
-                                               test_dataloader=test_dataloader,
-                                               loss_fn=loss_fn,
-                                               device=device)
+        test_loss, test_acc = test_one_epoch(model=model,
+                                             test_dataloader=test_dataloader,
+                                             loss_fn=loss_fn,
+                                             device=device)
         total_test_loss.append(test_loss)
         total_test_accuracy.append(test_acc)
         end = time.time()
-        total= end-start
-        print(f"epoch {i+1}/{epochs} | test loss: {test_loss:.4f} | test ac: %{test_acc:.4f} | elapsed time: {total:.2f}second(s)")
+        total = end-start
+        print(f"epoch {i+1}/{epochs} | test loss: {test_loss:.4f} | test ac: %{
+              test_acc:.4f} | elapsed time: {total:.2f}second(s)")
         print(' ')
-        if(test_loss<min_loss):
+        if (test_loss < min_loss):
             torch.save(model.state_dict(), "tumor_classifier.pth")
-            print(f"new best model! previous loss was: {min_loss} new loss is: {test_loss}")
+            print(f"new best model! previous loss was: {
+                  min_loss} new loss is: {test_loss}")
             print(' ')
-            min_loss=test_loss
+            min_loss = test_loss
 
     print(f"TRAINING ANG TESTING FINISHED")
     return total_train_loss, total_train_accuracy, total_test_loss, total_test_accuracy
+
 
 def evaluate(model_path, dataset):
     model = tumor_classifier()
@@ -250,12 +261,15 @@ def evaluate(model_path, dataset):
         figure.add_subplot(rows, cols, i)
 
         if predicted_label == label:
-            plt.title(f"Predicted: {dataset.headers[predicted_label]}\nTarget: {dataset.headers[label]}", color='green')
+            plt.title(f"Predicted: {dataset.headers[predicted_label]}\nTarget: {
+                      dataset.headers[label]}", color='green')
         else:
-            plt.title(f"Predicted: {dataset.headers[predicted_label]}\nTarget: {dataset.headers[label]}", color='red')
+            plt.title(f"Predicted: {dataset.headers[predicted_label]}\nTarget: {
+                      dataset.headers[label]}", color='red')
 
         plt.axis("off")
-        plt.imshow(img.squeeze().permute(1, 2, 0))  # Transpose dimensions for image display
+        # Transpose dimensions for image display
+        plt.imshow(img.squeeze().permute(1, 2, 0))
 
     plt.tight_layout()
     plt.show()

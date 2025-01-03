@@ -1,7 +1,7 @@
 import torch
 from data_setup import tumor_dataset, create_dataloaders
 from model import tumor_classifier
-from engine import train, test, evaluate, test_and_train
+from engine import evaluate, test_and_train
 import argparse
 from torch import nn, optim
 import matplotlib.pyplot as plt

@@ -4,9 +4,10 @@ import numpy as np
 import pandas as pd
 import seaborn as sn
 import matplotlib.pyplot as plt
-
 from sklearn.metrics import confusion_matrix
-def set_device()-> str:
+
+
+def set_device() -> str:
     """
     Set the device to use for running PyTorch operations, either CPU or GPU.
 
@@ -16,12 +17,13 @@ def set_device()-> str:
     if torch.cuda.is_available():
         print(f"device -> {torch.cuda.device(0)}")
         print(f"device name -> {torch.cuda.get_device_name(0)}")
-        print(f"available VRAM: {torch.cuda.get_device_properties(torch.cuda.device(0)).total_memory / (1024**3):.2f} GB")
+        print(f"available VRAM: {torch.cuda.get_device_properties(
+            torch.cuda.device(0)).total_memory / (1024**3):.2f} GB")
         return "cuda"
     return "cpu"
 
 
-def calculate_accuracy(true:int,total:int)->float:
+def calculate_accuracy(true: int, total: int) -> float:
     """Calculates the accuracy of the model
 
         Args:
@@ -33,7 +35,8 @@ def calculate_accuracy(true:int,total:int)->float:
     accuracy = (true/total)*100
     return accuracy
 
-def model_weights_change(model:nn.Module) -> np.ndarray:
+
+def model_weights_change(model: nn.Module) -> np.ndarray:
     """
     Calculates the change in weights of a given PyTorch model.
 
@@ -48,11 +51,9 @@ def model_weights_change(model:nn.Module) -> np.ndarray:
 
     for layer in model.parameters():
         if hasattr(layer, 'weight'):
-            weights = np.concatenate((weights,layer.weight.detach().flatten().numpy()))
+            weights = np.concatenate(
+                (weights, layer.weight.detach().flatten().numpy()))
     return weights
-
-
-
 
 
 def show_confusion(model, test_dataloader, classes, device):
@@ -70,7 +71,8 @@ def show_confusion(model, test_dataloader, classes, device):
         y_true.extend(labels)
 
     cf_matrix = confusion_matrix(y_true, y_pred)
-    df_cm = pd.DataFrame(cf_matrix / np.sum(cf_matrix) * 10, index=[i for i in classes], columns=[i for i in classes]) 
+    df_cm = pd.DataFrame(cf_matrix / np.sum(cf_matrix) * 10,
+                         index=[i for i in classes], columns=[i for i in classes])
 
     accuracy = np.trace(cf_matrix) / float(np.sum(cf_matrix))
     title = f"Confusion Matrix\nAccuracy: {accuracy * 100:.2f}%"
@@ -79,4 +81,3 @@ def show_confusion(model, test_dataloader, classes, device):
     sn.heatmap(df_cm, annot=True)
     plt.title(title)
     plt.show()
-
